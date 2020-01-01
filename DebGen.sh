@@ -29,6 +29,7 @@ for i in $@; do
 		-d|--dist) DIST="$2"; shift; shift;;
 		-r|--rel) REL="$2"; shift; shift;;
 		-o|--out) ROOTFS="$2"; shift; shift;;
+		-f|--force) FORCE="true"; shift;;
 		-p|--pkgs) PKGS="$2"; shift; shift;;
 		-h|--help) HELP="true"; shift;;
 	esac
@@ -39,6 +40,7 @@ done
 [ -z "$DIST" ] && DIST="debian"
 [ -z "$REL" ] && REL="stable" && [ "$DIST" = "ubuntu" ] && REL="bionic"
 [ -z "$ROOTFS" ] && ROOTFS="$PWD/OUTPUT/$DIST-$REL-$ARCH-$(date +%Y%m%d)"
+[ -z "$FORCE" ] && FORCE="false"
 [ -z "$PKGS" ] && PKGS="$PWD/pkgs.list"
 
 # Set Support Variables
@@ -65,14 +67,15 @@ help_txt()
 	echo "\t\t\t\tDebian: ($DEBIAN_RELS)"
 	echo "\t\t\t\tUbuntu: ($UBUNTU_RELS)"
 	echo "\t-o,--out\tSets output directory."
+	echo "\t-f,--force\tAlways overwrite output directory."
 	echo "\t-p,--pkgs\tIncludes list of extra packages to install"
 	echo "\t-h,--help\tShows this help text.\n"
 	echo "Usage Examples:"
 	echo "\t$(basename $0)"
 	echo "\t$(basename $0) -h"
-	echo "\t$(basename $0) -a amd64 -d debian -r stable -o OUTPUT -p pkgs.list"
+	echo "\t$(basename $0) -a amd64 -d debian -r stable -o OUTPUT -f -p pkgs.list"
 	echo "\t$(basename $0) --help"
-	echo "\t$(basename $0) --arch amd64 --dist debian --rel stable --out OUTPUT --pkgs pkgs.list"
+	echo "\t$(basename $0) --arch amd64 --dist debian --rel stable --out OUTPUT --force --pkgs pkgs.list"
 }
 
 run_script()
@@ -103,6 +106,7 @@ run_script()
 	# Check/Create Output Directory
 	if [ -d "$ROOTFS" ]; then
 		while true; do
+			$FORCE && rm -rf $ROOTFS && break
 			read -p "Output Directory \"$ROOTFS\" Already Exists, Do You Want To Overwrite It? (y/N): " yn
 			case $yn in
 				[Yy]) rm -rf $ROOTFS; break;;
