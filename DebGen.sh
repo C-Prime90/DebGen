@@ -29,6 +29,7 @@ for i in $@; do
 		-d|--dist) DIST="$2"; shift; shift;;
 		-r|--rel) REL="$2"; shift; shift;;
 		-o|--out) ROOTFS="$2"; shift; shift;;
+		-p|--pkgs) PKGS="$2"; shift; shift;;
 		-h|--help) HELP="true"; shift;;
 	esac
 done
@@ -38,6 +39,7 @@ done
 [ -z "$DIST" ] && DIST="debian"
 [ -z "$REL" ] && REL="stable" && [ "$DIST" = "ubuntu" ] && REL="bionic"
 [ -z "$ROOTFS" ] && ROOTFS="$PWD/OUTPUT/$DIST-$REL-$ARCH-$(date +%Y%m%d)"
+[ -z "$PKGS" ] && PKGS="$PWD/pkgs.list"
 
 # Set Support Variables
 SUPPORTED_ARCHS="amd64 arm64 armel armhf i386 mips mipsel powerpc powerpcspe ppc64el s390x"
@@ -63,6 +65,7 @@ help_txt()
 	echo "                         Debian: ($DEBIAN_RELS)"
 	echo "                         Ubuntu: ($UBUNTU_RELS)"
 	echo "    -o,--out         Sets output directory."
+	echo "    -p,--pkgs        Includes list of extra packages to install"
 	echo "    -h,--help        Shows this help text.\n"
 	echo "Usage Examples:"
 	echo "    $(basename $0)"
@@ -128,6 +131,9 @@ run_script()
 		# Generate Root Filesystem
 		debootstrap --arch $ARCH $REL $ROOTFS
 	fi
+
+	# Install Extra Packages
+	[ -f $PKGS ] && chroot $ROOTFS /usr/bin/apt update && chroot $ROOTFS /usr/bin/apt install -y $(cat $PKGS | xargs)
 }
 
 # Run DebGen
