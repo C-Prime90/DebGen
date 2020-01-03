@@ -73,7 +73,7 @@ help_txt()
 	$ECHO "\t-m,--mirror\tSets download mirror."
 	$ECHO "\t-o,--out\tSets output directory."
 	$ECHO "\t-f,--force\tAlways overwrite output directory."
-	$ECHO "\t-p,--pkgs\tIncludes list of extra packages to install"
+	$ECHO "\t-p,--pkgs\tIncludes list of extra packages to install."
 	$ECHO "\t-h,--help\tShows this help text.\n"
 	$ECHO "Usage Examples:"
 	$ECHO "\t$(basename $0)"
@@ -120,6 +120,7 @@ run_script()
 		done
 	fi
 	mkdir -p $ROOTFS
+	chown $(logname):$(logname) $(dirname $ROOTFS)
 
 	# Foreign Target
 	if $FOREIGN; then
@@ -147,15 +148,32 @@ run_script()
 	mount --bind /proc $ROOTFS/proc
 	mount --bind /sys $ROOTFS/sys
 
-	# Install Extra Packages
-	[ -f $PKGS ] && chroot $ROOTFS apt update && chroot $ROOTFS apt install -y $(cat $PKGS | xargs)
+	# Set Hostname
+	[ "$DIST" = "ubuntu" ] && HOSTNAME="Ubuntu" || HOSTNAME="Debian"
+	$ECHO "$HOSTNAME" > $ROOTFS/etc/hostname
+
+	# Set DNS Servers
+	$ECHO "nameserver 8.8.8.8\nnameserver 8.8.4.4" > $ROOTFS/etc/resolv.conf
 
 	# Set Root Password
 	chroot $ROOTFS echo -e "letmein\nletmein" | passwd root
 
+	# Install Extra Packages
+	chroot $ROOTFS apt update
+	chroot $ROOTFS apt install -y openssh-server
+	[ -f $PKGS ] && chroot $ROOTFS apt install -y $(cat $PKGS | xargs)
+
+	# Configure OpenSSH Server
+	sed -i -e '/#PermitRootLogin/c\PermitRootLogin yes' $ROOTFS/etc/ssh/sshd_config
+
 	# Clean-up Root Filesystem
 	umount $ROOTFS/dev $ROOTFS/proc $ROOTFS/sys
 	$FOREIGN && rm $ROOTFS/usr/bin/$QEMU
+
+	# Archive Root Filesystem
+	tar -czf $(dirname $ROOTFS)/$(basename $ROOTFS).tar.gz -C $ROOTFS .
+	chown $(logname):$(logname) $(dirname $ROOTFS)/$(basename $ROOTFS).tar.gz
+	$ECHO "\n\nCreated \"$(dirname $ROOTFS)/$(basename $ROOTFS).tar.gz\""
 }
 
 # Run DebGen
