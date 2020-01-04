@@ -2,7 +2,7 @@
 ################################################################################
 #
 # Copyright (C) 2019-2020 Corey Moyer <cronmod.dev@gmail.com>
-# This file is part of DebGen - <https://gitlab.com/cronmod-dev/DebGen/>.
+# This file is part of DebGen - <https://gitlab.com/CoreMC/DebGen/>.
 #
 # DebGen is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ UBUNTU_RELS="xenial bionic"
 help_txt()
 {
 	# Help Text
-	$ECHO "DebGen $VER <https://gitlab.com/cronmod-dev/DebGen/>\n"
+	$ECHO "DebGen $VER <https://gitlab.com/CoreMC/DebGen/>\n"
 	$ECHO "Copyright (C) 2019-2020 Corey Moyer <cronmod.dev@gmail.com>"
 	$ECHO "Licensed under the GNU General Public License v3.0 <https://www.gnu.org/licenses/gpl-3.0.txt>\n"
 	$ECHO "DebGen is used to generate Debian/Ubuntu root filesystems.\n"
