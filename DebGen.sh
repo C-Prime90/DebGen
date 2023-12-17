@@ -50,7 +50,7 @@ done
 # Set Support Variables
 SUPPORTED_ARCHS="amd64 arm64 armel armhf i386 mips mipsel powerpc powerpcspe ppc64el s390x"
 SUPPORTED_DISTS="debian ubuntu"
-DEBIAN_RELS="stretch buster bullseye sid oldstable stable testing unstable"
+DEBIAN_RELS="stretch buster bullseye bookworm trixie sid oldstable stable testing unstable"
 UBUNTU_RELS="xenial bionic"
 [ "$DIST" = "ubuntu" ] && SUPPORTED_RELS="$UBUNTU_RELS" || SUPPORTED_RELS="$DEBIAN_RELS"
 
