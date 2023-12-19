@@ -51,7 +51,7 @@ done
 SUPPORTED_ARCHS="amd64 arm64 armel armhf i386 mips mipsel powerpc powerpcspe ppc64el s390x"
 SUPPORTED_DISTS="debian ubuntu"
 DEBIAN_RELS="stretch buster bullseye bookworm trixie sid oldstable stable testing unstable"
-UBUNTU_RELS="xenial bionic"
+UBUNTU_RELS="trusty xenial bionic focal jammy lunar mantic"
 [ "$DIST" = "ubuntu" ] && SUPPORTED_RELS="$UBUNTU_RELS" || SUPPORTED_RELS="$DEBIAN_RELS"
 
 help_txt()
