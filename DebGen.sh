@@ -43,6 +43,12 @@ done
 [ -z "$ARCH" ] && ARCH="amd64"
 [ -z "$DIST" ] && DIST="debian"
 [ -z "$REL" ] && REL="stable" && [ "$DIST" = "ubuntu" ] && REL="bionic"
+if [ -z "$MIRROR" ]; then
+	MIRROR="http://deb.debian.org/debian"
+	if [ "$DIST" = "ubuntu" ]; then
+		[ "$ARCH" != "amd64" ] && [ "$ARCH" != "i386" ] && MIRROR="http://ports.ubuntu.com/ubuntu-ports" || MIRROR="http://archive.ubuntu.com/ubuntu"
+	fi
+fi
 [ -z "$ROOTFS" ] && ROOTFS="$PWD/OUTPUT/$DIST-$REL-$ARCH-$(date +%Y%m%d)" || ROOTFS="$ROOTFS/$DIST-$REL-$ARCH-$(date +%Y%m%d)"
 [ -z "$FORCE" ] && FORCE="false"
 [ -z "$PKGS" ] && PKGS="$PWD/pkgs.list"
