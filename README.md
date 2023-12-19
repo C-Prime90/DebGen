@@ -1,5 +1,5 @@
 <pre>
-DebGen v1.0.0 [https://gitlab.com/CoreMC/DebGen/]
+DebGen v1.0.1 [https://gitlab.com/CoreMC/DebGen/]
 
 Copyright (C) 2019-2020 Corey Moyer [cronmod.dev@gmail.com]
 Licensed under the GNU General Public License v3.0 [https://www.gnu.org/licenses/gpl-3.0.txt]
@@ -14,12 +14,12 @@ Optional Arguments:
 	-d,--dist	Sets distribution.
 				(debian ubuntu)
 	-r,--rel	Sets release.
-				Debian: (stretch buster bullseye sid oldstable stable testing unstable)
-				Ubuntu: (xenial bionic)
+				Debian: (stretch buster bullseye bookworm trixie sid oldstable stable testing unstable)
+				Ubuntu: (trusty xenial bionic focal jammy lunar mantic)
 	-m,--mirror	Sets download mirror.
 	-o,--out	Sets output directory.
 	-f,--force	Always overwrite output directory.
-	-p,--pkgs	Includes list of extra packages to install
+	-p,--pkgs	Includes list of extra packages to install.
 	-h,--help	Shows this help text.
 
 Usage Examples:
