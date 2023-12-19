@@ -145,6 +145,7 @@ run_script()
 	# Prepare For Chroot
 	LC_ALL="C" LANGUAGE="C" LANG="C"
 	mount --bind /dev $ROOTFS/dev
+	mount -t devpts devpts $ROOTFS/dev/pts
 	mount --bind /proc $ROOTFS/proc
 	mount --bind /sys $ROOTFS/sys
 
@@ -167,7 +168,7 @@ run_script()
 	sed -i -e '/#PermitRootLogin/c\PermitRootLogin yes' $ROOTFS/etc/ssh/sshd_config
 
 	# Clean-up Root Filesystem
-	umount $ROOTFS/dev $ROOTFS/proc $ROOTFS/sys
+	umount --recursive $ROOTFS/dev $ROOTFS/proc $ROOTFS/sys
 	$FOREIGN && rm $ROOTFS/usr/bin/$QEMU
 
 	# Archive Root Filesystem
