@@ -114,6 +114,12 @@ run_script()
 	done
 	[ -z "$supported" ] && $ECHO "Unsupported Release: $REL\nSupported Releases: $SUPPORTED_RELS" && exit 1 || unset -v supported
 
+	# Check Dpkg
+	DPKG_VER="$(apt list dpkg | grep installed | cut -d ' ' -f2 | tr -d .)"
+	if [ "$REL" = "jammy" ] || [ "$REL" = "lunar" ] || [ "$REL" = "mantic" ]; then
+		[ "$DPKG_VER" -lt "12118" ] && $ECHO "$(echo $DIST | sed 's/./\U&/') $(echo $REL | sed 's/./\U&/') Requires (dpkg >= 1.21.18)" && exit 1
+	fi
+
 	# Check/Create Output Directory
 	if [ -d "$ROOTFS" ]; then
 		while true; do
