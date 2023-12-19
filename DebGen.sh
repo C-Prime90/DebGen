@@ -20,7 +20,7 @@
 ################################################################################
 
 # Set DebGen Version
-VER="v1.0.1"
+VER="v1.0.2"
 
 # Bash/Dash Shell Compatibility
 [ -z "$BASH_VERSION" ] && ECHO="echo" || ECHO="echo -e"
