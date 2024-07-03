@@ -20,7 +20,7 @@
 ################################################################################
 
 # Set DebGen Version
-VER="v1.0.2"
+VER="v1.0.3"
 
 # Bash/Dash Shell Compatibility
 [ -z "$BASH_VERSION" ] && ECHO="echo" || ECHO="echo -e"
@@ -170,6 +170,9 @@ run_script()
 
 	# Set Root Password
 	chroot $ROOTFS echo -e "letmein\nletmein" | passwd root
+
+	# Configure APT
+	echo "Acquire::Check-Valid-Until \"false\";" > $ROOTFS/etc/apt/apt.conf.d/90validuntil
 
 	# Install Extra Packages
 	chroot $ROOTFS apt update
