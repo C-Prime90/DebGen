@@ -1,5 +1,5 @@
 <pre>
-DebGen v1.0.3 [https://gitlab.com/CoreMC/DebGen/]
+DebGen v1.0.4 [https://gitlab.com/CoreMC/DebGen/]
 
 Copyright (C) 2019-2020 Corey Moyer [cronmod.dev@gmail.com]
 Licensed under the GNU General Public License v3.0 [https://www.gnu.org/licenses/gpl-3.0.txt]

@@ -20,7 +20,7 @@
 ################################################################################
 
 # Set DebGen Version
-VER="v1.0.3"
+VER="v1.0.4"
 
 # Bash/Dash Shell Compatibility
 [ -z "$BASH_VERSION" ] && ECHO="echo" || ECHO="echo -e"
@@ -134,7 +134,11 @@ run_script()
 	mkdir -p $ROOTFS
 	chown $(logname):$(logname) $(dirname $ROOTFS)
 
-	# Foreign Target
+	# Generate Root Filesystem
+	OPTS="--include=openssh-server"
+	[ -n "$(echo $MIRROR | grep -o https://)" ] && OPTS="--include=ca-certificates,openssh-server"
+	$FOREIGN && OPTS="$OPTS --foreign"
+	debootstrap --arch=$ARCH $OPTS $REL $ROOTFS $MIRROR
 	if $FOREIGN; then
 		# Set QEMU
 		QEMU="qemu-$ARCH-static"
@@ -144,14 +148,8 @@ run_script()
 		[ "$ARCH" = "powerpc" ] || [ "$ARCH" = "powerpcspe" ] && QEMU="qemu-ppc-static"
 		[ "$ARCH" = "ppc64el" ] && QEMU="qemu-ppc64le-static"
 		QEMU_BIN="$(which $QEMU)"
-
-		# Generate Root Filesystem
-		debootstrap --foreign --arch $ARCH $REL $ROOTFS $MIRROR
 		cp $QEMU_BIN $ROOTFS/usr/bin/
 		chroot $ROOTFS /debootstrap/debootstrap --second-stage
-	else # Native Target
-		# Generate Root Filesystem
-		debootstrap --arch $ARCH $REL $ROOTFS $MIRROR
 	fi
 
 	# Prepare For Chroot
@@ -172,18 +170,20 @@ run_script()
 	chroot $ROOTFS echo -e "letmein\nletmein" | passwd root
 
 	# Configure APT
-	echo "Acquire::Check-Valid-Until \"false\";" > $ROOTFS/etc/apt/apt.conf.d/90validuntil
+	$ECHO "Acquire::Check-Valid-Until \"false\";" > $ROOTFS/etc/apt/apt.conf.d/90validuntil
+	$ECHO "APT::Install-Recommends \"false\";\nAPT::Install-Suggests \"false\";" > $ROOTFS/etc/apt/apt.conf.d/95install
 
 	# Install Extra Packages
-	chroot $ROOTFS apt update
-	chroot $ROOTFS apt install -y openssh-server
-	[ -f $PKGS ] && chroot $ROOTFS apt install -y $(cat $PKGS | xargs)
+	if [ -f $PKGS ]; then
+		chroot $ROOTFS apt update
+		chroot $ROOTFS apt install -y $(cat $PKGS | xargs)
+	fi
 
 	# Configure OpenSSH Server
 	sed -i -e '/#PermitRootLogin/c\PermitRootLogin yes' $ROOTFS/etc/ssh/sshd_config
 
 	# Clean-up Root Filesystem
-	umount --recursive $ROOTFS/dev $ROOTFS/proc $ROOTFS/sys
+	umount -l --recursive $ROOTFS/dev $ROOTFS/proc $ROOTFS/sys
 	$FOREIGN && rm $ROOTFS/usr/bin/$QEMU
 
 	# Archive Root Filesystem
